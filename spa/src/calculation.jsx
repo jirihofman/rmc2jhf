@@ -1,50 +1,35 @@
 export function getIntervals(goals) {
-	console.log('getResults');
-
-	if (!goals || goals.length === 0) {
-		return null;
-	}
-	goals.map((goal, i) => {
-		console.log('Cil %s', i, goal);
-	});
+	// seradim kombinovane cile podle doby trvani
 	goals.sort((a, b) => {
 		return a.months - b.months;
 	});
-	goals.map((goal, i) => {
-		console.log('serazeno %s', i, goal);
-	});
-
+	// pro kazdy kombinovany cil vytvorim Interval (aka splatkove obdobi)
 	const intervals = goals.map((goal, i) => {
-		return { month: goal.months, min: 0, previousLower: false };
+		return { month: goal.months, previousLower: false };
 	});
-	console.log('intervals', intervals);
-
-	const total = goals.map(g => g.amount).reduce((a, b) => a + b, 0);
-	const duration = Math.max.apply(Math, goals.map(function (o) { return o.months; }));
-	console.log('total %s, duration %s', total, duration);
 
 	intervals.forEach((interval, i) => {
-		interval.min = goals.map((g, j) => { if (i >= j) { return g.amount; } else { return 0; } }).reduce((a, b) => a + b, 0);
-		interval.previousMonth = goals[i - 1] ? goals[i - 1].months : 0;
-		interval.duration = interval.month - interval.previousMonth;
-		delete interval.previousMonth;
-		interval.paymentMin = goals[i].amount / interval.duration;
+		const previousMonth = goals[i - 1] ? goals[i - 1].months : 0;
+		interval.duration = interval.month - previousMonth;
+		interval.payment = goals[i].amount / interval.duration;
 		interval.goal = goals[i];
 
-		if (intervals[i - 1] && (intervals[i - 1].paymentMin < interval.paymentMin)) {
-			console.log('pro predchozi interval je nizsi splatka', intervals[i - 1].paymentMin, interval.paymentMin);
+		if (intervals[i - 1] && (intervals[i - 1].payment < interval.payment)) {
 			interval.previousLower = true;
 		}
 		interval.index = i;
-		console.log('foreach intervatl', i, interval);
 	});
 	return intervals;
 }
 
+/**
+ * Vrati pole obdobi, na ktera budou splatky vzdy rozdeleny. Tj. takove, ktera maji nizsci splatku nez obdobi predchozi
+ * 
+ * @param {[Object]} goals Pole sloucenych cilu
+ * @returns {[Object]} Pole obdobi, ktera budou ve vysledku
+ */
 export function getPeriods(goals) {
-	const months = goals.map(g => g.months).filter((x, i, a) => a.indexOf(x) === i);
-	console.log(months);
-	return months;
+	return goals.map(g => g.months).filter((x, i, a) => a.indexOf(x) === i);
 }
 
 // sloucim ty cile, ktere trvaji stejne dlouho. Muzu je brat jako jeden
@@ -59,34 +44,44 @@ export function combineGoals(goals) {
 		return g;
 	});
 
-	console.log(goalsCombined);
 	return goalsCombined;
 }
 
+/**
+ * Z mnoziny vsech moznych splatkovych intervalu vytvori novou, ktera muze obsahovat mene intervalu.
+ * To se stane pokud:
+ * - nasledujici interval ma vetsi splatku, nez ten pred nim
+ * Takove jsou slouceny do jednoho. Jejich trvani je souctem vsech po sobe jdoucich intervalu, kde splatka pozdejsiho je vyssi
+ * nez splatka predchoziho
+ * @param {[Object]} intervals Vsechny splatkove intervaly vytvorene z dob splaceni kombinovaych cilu
+ * @returns {[Object]} intervals Vysledne pole splatkovych intervalu, ve kterych se lisi velikost splatky 
+ */
 export function combineIntervals(intervals) {
 	const periods = intervals.filter(i => !i.previousLower);
 	periods.forEach((p, i) => {
-		// zjistit si dalsi periodu, pred kterou se musim zstavit
-		console.log('jsem v %s a dalsi je %s', i, periods[i + 1]);
-		p.toCombine = intervals.filter((interval, idx) => {
-			if (interval.previousLower && interval.index > p.index && ((periods[i + 1] && periods[i + 1].index > interval.index) || !periods[i + 1])) {
-				console.log('pridavam', interval.index, interval, p);
-				return true;
-			}
-		});
+		// zjistit si dalsi periodu, pred kterou se musim zastavit
+		// K A1 mohu sloucit dalsi intervaly (B), pokud jsou splneny vsechny nasledujici podminky
+		// - B nasleduje po A (porovnani indexu)
+		// - B je pred dalsim obdobim, ktere nema vyssi splatku nez jeho predchudce, nebo je poslednim obdobim uplne
+		// - B ma vyssi splatku nez predchozi interval
+		p.toCombine = intervals.filter((interval, idx) => 
+			interval.previousLower && interval.index > p.index && ((periods[i + 1] && periods[i + 1].index > interval.index) || !periods[i + 1])
+		);
 	});
 
 	// vim, ktere obdobi budu kombinovat do jedne splatky, ted je sectu dohromady a nastavim delku nove vznikleho obdobi
+	// pro vsechny nastavim sumu splatky a zacatek a konec splaceni
 	periods.forEach((p, i) => {
 		p.total = p.goal.amount;
 		p.monthStart = p.month - p.duration + 1;
 		if (p.toCombine && p.toCombine.length > 0) {
-			console.log('budeme slucovat obdobi a splatky', p, p.toCombine);
+			// sectu castku vsech cilu, ktera musi byt zaplacena v techto obdobich, ktera kombinuji
 			const toPay = p.toCombine.map(g => g.goal.amount).reduce(function (a, b) { return a + b; });
-			console.log('+ ', toPay, p);
-			p.total += toPay;
+			// castku z kombinovanych obdobi prictu k castce obdobi, se kterym je kombinuju
+			p.total += toPay; 
+			// pote mohu spocitat celkovou splatku pro zkombinovana obdobi
 			p.duration += p.toCombine.map(g => g.duration).reduce(function (a, b) { return a + b; });
-			p.paymentMin = p.total / p.duration;
+			p.payment = p.total / p.duration;
 			// zjistim posledni mesic splaceni tohoto sloucenoho obdobi
 			const monthEnd = Math.max.apply(Math, p.toCombine.map(function (o) { return o.goal.months; }));
 			p.monthStart = monthEnd - p.duration + 1;
@@ -97,10 +92,17 @@ export function combineIntervals(intervals) {
 	return periods;
 }
 
-export function getResults(combinedIntervals) {
-	const result = combineIntervals(getIntervals(combineGoals(combinedIntervals)));
-	console.log(result);
+export function getResults(goals) {
+	if (!goals || goals.length === 0) {
+		return null;
+	}
+	const combinedGoals = combineGoals(goals);
+	const intervals = getIntervals(combinedGoals);
+	const combinedIntervals = combineIntervals(intervals);
+	const result = combinedIntervals.map(interval=>{
+		const i = { monthStart: interval.monthStart, monthEnd: interval.month, payment: interval.payment};
+		return i;
+	});
 	
 	return result;
-	
 }

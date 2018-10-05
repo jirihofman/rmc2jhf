@@ -2,7 +2,9 @@
   "name": "spa",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://jirihofman.github.io/rmc2jhf",
   "dependencies": {
+    "gh-pages": "^2.0.1",
     "i18next": "^11.9.0",
     "lodash": "^4.17.11",
     "react": "^16.5.2",
@@ -13,6 +15,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "build": "react-scripts build",
     "test": "jest --color --coverage --verbose",
     "eject": "react-scripts eject"

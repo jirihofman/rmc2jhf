@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import i18n from 'i18next';
-import { Grid, Glyphicon, Form, FormGroup, ControlLabel, FormControl, Button, Row, Col } from 'react-bootstrap';
+import { Grid, Glyphicon, Form, FormGroup, ControlLabel, FormControl, Button, Row, Col, PageHeader } from 'react-bootstrap';
 import { getResults } from './calculation';
 import ResultTable from './components/resultTable';
 
@@ -17,10 +17,7 @@ class Main extends Component {
 	}
 	renderGoalInputs(goal, idx) {
 		return (
-			<Row key={idx} style={{ 'margin': '0.3em' }}>
-				<Col xs={1} md={1}>
-					<Button type="button" onClick={this.handleRemoveGoal.bind(this, idx)} bsStyle="danger" title={i18n.t('goal-remove')}><Glyphicon glyph="trash" /></Button>
-				</Col>
+			<Row key={idx} style={{ 'margin': '0.3em', 'display': 'inline'}}>
 				<Col xs={5} md={5}>
 					<FormGroup controlId={`name-${idx}`}>
 						<ControlLabel>{i18n.t('goal')}</ControlLabel>
@@ -38,6 +35,9 @@ class Main extends Component {
 						<ControlLabel>{i18n.t('goal-months')}</ControlLabel>
 						<FormControl type="text" placeholder="12" value={goal.months} onChange={this.handleGoalNameChange.bind(this, idx, 'months')} />
 					</FormGroup>
+				</Col>
+				<Col>
+					<Button type="button" onClick={this.handleRemoveGoal.bind(this, idx)} bsStyle="danger" title={i18n.t('goal-remove')}><Glyphicon glyph="trash" /></Button>
 				</Col>
 			</Row>
 		);
@@ -76,9 +76,7 @@ class Main extends Component {
 	isCalcDisabled() {
 		let disabled = true;
 		if (this.state && this.state.goals && this.state.goals.length) {
-			disabled = this.state.goals.some(g => isNaN(g.amount) || isNaN(g.months));
-			disabled = this.state.goals.some(g => g.months === 0);
-
+			disabled = this.state.goals.some(g => isNaN(g.amount) || isNaN(g.months)) || this.state.goals.some(g => g.months === 0);
 		}
 		return disabled;
 	}
@@ -93,20 +91,25 @@ class Main extends Component {
 
 	render() {
 		return (
-			<Grid fluid>
-				<h1>{i18n.t('calculation-title')}</h1>
-				<Form>
-					<Row>
-						<Button onClick={this.handleAddGoal.bind(this)} bsStyle="success" style={{ 'margin': '0.3em' }}><Glyphicon glyph="plus" /> {i18n.t('goal-add')}</Button>
-					</Row>
-					<Row>
-						{this.state.goals.map((goal, i) => this.renderGoalInputs(goal, i))}
-					</Row>
-					<Row>
-						<Button onClick={this.handleSubmit} bsStyle="primary" style={{ 'margin': '0.3em' }} disabled={this.isCalcDisabled()} title={this.getCalculateTitle()}>{i18n.t('do-calculation')}</Button>
-					</Row>
-				</Form>
-				<ResultTable intervals={this.state.intervals}></ResultTable>
+			<Grid >
+				<Row>
+					<Col xs={6} xsOffset={3}>
+						<PageHeader>{i18n.t('calculation-title')}</PageHeader>
+						<Form>
+							<Row>
+								<Button onClick={this.handleAddGoal.bind(this)} bsStyle="success" style={{ 'margin': '0.3em' }}><Glyphicon glyph="plus" /> {i18n.t('goal-add')}</Button>
+							</Row>
+							<Row>
+								{this.state.goals.map((goal, i) => this.renderGoalInputs(goal, i))}
+							</Row>
+							<Row>
+								<Button onClick={this.handleSubmit} bsStyle="primary" style={{ 'margin': '0.3em' }} disabled={this.isCalcDisabled()} title={this.getCalculateTitle()}>{i18n.t('do-calculation')}</Button>
+							</Row>
+						</Form>
+						<ResultTable intervals={this.state.intervals}></ResultTable>
+					</Col>
+
+				</Row>
 			</Grid>
 		);
 	}

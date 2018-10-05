@@ -8,7 +8,7 @@ class ResultTable extends Component {
 		if (!interval) {
 			return null;
 		} else {
-			return <div>{interval.monthStart}. - {interval.month}. {i18n.t('calculation-month')} = {interval.paymentMin} {i18n.t('czk')}</div>;
+			return <div>{interval.monthStart}. - {interval.monthEnd}. {i18n.t('calculation-month')} = {interval.payment} {i18n.t('czk')}</div>;
 		}
 	}
 

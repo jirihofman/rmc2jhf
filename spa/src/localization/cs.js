@@ -1,9 +1,9 @@
 export default {
 	translation: {
-		'goal': 'Cíl',
+		'goal': 'Název cíle',
 		'goal-add': 'Přidat cíl',
 		'goal-amount': 'Částka',
-		'goal-months': 'Počet měsíců',
+		'goal-months': 'Měsíců',
 		'goal-remove': 'Odebrat cíl',
 		'calculation-title': 'Výpočet spoření',
 		'do-calculation': 'Provést výpočet',
