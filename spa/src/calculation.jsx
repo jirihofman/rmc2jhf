@@ -38,7 +38,7 @@ export function combineGoals(goals) {
 	let goalsCombined = months.map(m => {
 		let g = {};
 		// dohledam cile, ktere se maji splatit na konci tohoto obdobi
-		const toPay = goals.filter(g => g.months === m).map(g => g.amount).reduce(function (a, b) { return a + b; });
+		const toPay = goals.filter(g => g.months === m).map(g => Number(g.amount)).reduce(function (a, b) { return a + b; });
 		g.amount = toPay;
 		g.months = m;
 		return g;

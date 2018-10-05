@@ -21,19 +21,19 @@ class Main extends Component {
 				<Col xs={5} md={5}>
 					<FormGroup controlId={`name-${idx}`}>
 						<ControlLabel>{i18n.t('goal')}</ControlLabel>
-						<FormControl type="text" placeholder={i18n.t('goal') + ` #${idx + 1}`} value={goal.name} onChange={this.handleGoalNameChange.bind(this, idx, 'name')} />
+						<FormControl type="text" placeholder={i18n.t('goal')} value={goal.name} onChange={this.handleGoalNameChange.bind(this, idx, 'name')} />
 					</FormGroup>
 				</Col>
 				<Col xs={3} md={2}>
 					<FormGroup controlId={`amount-${idx}`}>
 						<ControlLabel>{i18n.t('goal-amount')}</ControlLabel>
-						<FormControl type="text" placeholder="1000" value={goal.amount} onChange={this.handleGoalNameChange.bind(this, idx, 'amount')} />
+						<FormControl type="number" placeholder="1000" step="1000" min="0" value={goal.amount} onChange={this.handleGoalNameChange.bind(this, idx, 'amount')} />
 					</FormGroup>
 				</Col>
 				<Col xs={3} md={2}>
 					<FormGroup controlId={`months-${idx}`}>
 						<ControlLabel>{i18n.t('goal-months')}</ControlLabel>
-						<FormControl type="text" placeholder="12" value={goal.months} onChange={this.handleGoalNameChange.bind(this, idx, 'months')} />
+						<FormControl type="number" placeholder="12" min="1" value={goal.months} onChange={this.handleGoalNameChange.bind(this, idx, 'months')} />
 					</FormGroup>
 				</Col>
 				<Col>
@@ -76,7 +76,7 @@ class Main extends Component {
 	isCalcDisabled() {
 		let disabled = true;
 		if (this.state && this.state.goals && this.state.goals.length) {
-			disabled = this.state.goals.some(g => isNaN(g.amount) || isNaN(g.months)) || this.state.goals.some(g => g.months === 0);
+			disabled = this.state.goals.some(g => isNaN(g.amount) || isNaN(g.months)) || this.state.goals.some(g => g.months < 1);
 		}
 		return disabled;
 	}
@@ -93,7 +93,7 @@ class Main extends Component {
 		return (
 			<Grid >
 				<Row>
-					<Col xs={6} xsOffset={3}>
+					<Col xs={8} xsOffset={2}>
 						<PageHeader>{i18n.t('calculation-title')}</PageHeader>
 						<Form>
 							<Row>
