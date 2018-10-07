@@ -15,28 +15,49 @@ class Main extends Component {
 		};
 		this.handleSubmit = this.handleSubmit.bind(this);
 	}
+
+	getValidationState(i, attr) {
+		switch (attr) {
+			case 'amount':
+				if (this.state.goals[i].amount > 0) { return 'success'; }
+				else { return 'error'; }
+			case 'months':
+				if (this.state.goals[i].months > 0) { return 'success'; }
+				else { return 'error'; }
+			default:
+				if (this.state.goals[i].name !== '') { return 'success'; }
+				else { return 'warning'; }
+		}
+	}
+
+	/**
+	 * Vykresli jeden Cil sporeni
+	 * @param {Object} goal Cil sporeni
+	 * @param {int} idx Poradi
+	 * @returns {Row} Cil sporeni
+	 */
 	renderGoalInputs(goal, idx) {
 		return (
-			<Row key={idx} style={{ 'margin': '0.3em', 'display': 'inline'}}>
-				<Col xs={5} md={5}>
-					<FormGroup controlId={`name-${idx}`}>
+			<Row key={idx} style={{ 'margin': '0.3em', 'display': 'inline' }}>
+				<Col xs={12} md={5}>
+					<FormGroup controlId={`name-${idx}`} validationState={this.getValidationState(idx, 'name')}>
 						<ControlLabel>{i18n.t('goal')}</ControlLabel>
 						<FormControl type="text" placeholder={i18n.t('goal')} value={goal.name} onChange={this.handleGoalNameChange.bind(this, idx, 'name')} />
 					</FormGroup>
 				</Col>
-				<Col xs={3} md={2}>
-					<FormGroup controlId={`amount-${idx}`}>
+				<Col xs={5} md={2}>
+					<FormGroup controlId={`amount-${idx}`} validationState={this.getValidationState(idx, 'amount')}>
 						<ControlLabel>{i18n.t('goal-amount')}</ControlLabel>
 						<FormControl type="number" placeholder="1000" step="1000" min="0" value={goal.amount} onChange={this.handleGoalNameChange.bind(this, idx, 'amount')} />
 					</FormGroup>
 				</Col>
-				<Col xs={3} md={2}>
-					<FormGroup controlId={`months-${idx}`}>
+				<Col xs={5} md={2}>
+					<FormGroup controlId={`months-${idx}`} validationState={this.getValidationState(idx, 'months')}>
 						<ControlLabel>{i18n.t('goal-months')}</ControlLabel>
 						<FormControl type="number" placeholder="12" min="1" value={goal.months} onChange={this.handleGoalNameChange.bind(this, idx, 'months')} />
 					</FormGroup>
 				</Col>
-				<Col>
+				<Col xs={1} md={1}>
 					<Button type="button" onClick={this.handleRemoveGoal.bind(this, idx)} bsStyle="danger" title={i18n.t('goal-remove')}><Glyphicon glyph="trash" /></Button>
 				</Col>
 			</Row>
@@ -73,6 +94,11 @@ class Main extends Component {
 		this.setState({ intervals: getResults(this.state.goals) });
 	}
 
+	/**
+	 * Kdy bude tlacitko Proved vypocet neaktivni?
+	 * - pokud nejaka castka nebo mesic, nebo pokud je mesic 0
+	 * @returns {boolean} Muzeme provest vypocet?
+	 */
 	isCalcDisabled() {
 		let disabled = true;
 		if (this.state && this.state.goals && this.state.goals.length) {
@@ -81,6 +107,9 @@ class Main extends Component {
 		return disabled;
 	}
 
+	/**
+	 * @returns {string} Popisek pro tlacitko Proved vypocet, pokud je disablovano
+	 */
 	getCalculateTitle() {
 		if (this.isCalcDisabled()) {
 			return i18n.t('calculate-disabled-title');
@@ -93,7 +122,7 @@ class Main extends Component {
 		return (
 			<Grid >
 				<Row>
-					<Col xs={8} xsOffset={2}>
+					<Col xs={12} md={8} mdOffset={2}>
 						<PageHeader>{i18n.t('calculation-title')}</PageHeader>
 						<Form>
 							<Row>

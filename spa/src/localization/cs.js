@@ -5,7 +5,7 @@ export default {
 		'goal-amount': 'Částka',
 		'goal-months': 'Měsíců',
 		'goal-remove': 'Odebrat cíl',
-		'calculation-title': 'Výpočet spoření',
+		'calculation-title': 'Spořící kalkulátor',
 		'do-calculation': 'Provést výpočet',
 		'calculation-month': 'měsíc',
 		'calculation-results': 'Výsledky',
