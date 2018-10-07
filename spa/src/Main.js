@@ -8,6 +8,7 @@ class Main extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			lang: 'en',
 			calcDisabled: this.isCalcDisabled(),
 			intervals: [],
 			goals: [{ name: '', amount: 0, months: 0 }]
@@ -119,11 +120,17 @@ class Main extends Component {
 	}
 
 	render() {
+		i18n.changeLanguage(this.state.lang);
+
 		return (
 			<Grid >
 				<Row>
 					<Col xs={12} md={8} mdOffset={2}>
-						<PageHeader>{i18n.t('calculation-title')}</PageHeader>
+						<PageHeader>
+							{i18n.t('calculation-title')}
+							<Button className="pull-right" onClick={() => this.setState({ lang: 'cs' })} bsSize='xsmall'><img src='./img/cz.png' width='16' /></Button>
+							<Button className="pull-right" onClick={() => this.setState({ lang: 'en' })} bsSize='xsmall'><img src='/img/en.png' width='16' /></Button>
+						</PageHeader>
 						<Form>
 							<Row>
 								<Button onClick={this.handleAddGoal.bind(this)} bsStyle="success" style={{ 'margin': '0.3em' }}><Glyphicon glyph="plus" /> {i18n.t('goal-add')}</Button>

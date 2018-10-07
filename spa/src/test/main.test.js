@@ -1,11 +1,18 @@
 import Main from '../Main';
 import React from 'react';
+import i18next from 'i18next';
 import { shallow } from 'enzyme';
 import * as calculation from '../calculation';
+import localization from '../localization';
 
 describe('Main app', () => {
 	let props = {};
 	let wrapper = null;
+	i18next.init({
+		lng: 'cs', // defaultne cestina
+		resources: localization,
+		interpolation: { escapeValue: false }  // React already does escaping
+	});
 	beforeEach(() => {
 		wrapper = shallow(<Main {...props} />);
 	});
