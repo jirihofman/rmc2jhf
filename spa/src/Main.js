@@ -128,8 +128,8 @@ class Main extends Component {
 					<Col xs={12} md={8} mdOffset={2}>
 						<PageHeader>
 							{i18n.t('calculation-title')}
-							<Button className="pull-right" onClick={() => this.setState({ lang: 'cs' })} bsSize='xsmall'><img src='./img/cz.png' width='16' /></Button>
-							<Button className="pull-right" onClick={() => this.setState({ lang: 'en' })} bsSize='xsmall'><img src='/img/en.png' width='16' /></Button>
+							<Button className="pull-right" onClick={() => this.setState({ lang: 'cs' })} bsSize='xsmall'><img src='/img/cz.png' alt='cz' width='16' /></Button>
+							<Button className="pull-right" onClick={() => this.setState({ lang: 'en' })} bsSize='xsmall'><img src='/img/en.png' alt='en' width='16' /></Button>
 						</PageHeader>
 						<Form>
 							<Row>
