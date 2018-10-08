@@ -8,7 +8,7 @@ class Main extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			lang: 'en',
+			lang: 'cs',
 			calcDisabled: this.isCalcDisabled(),
 			intervals: [],
 			goals: [{ name: '', amount: 0, months: 0 }]
